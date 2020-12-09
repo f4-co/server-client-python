@@ -251,12 +251,13 @@ class Workbooks(QuerysetEndpoint):
 
     # Publishes workbook. Chunking method if file over 64MB
     @api(version="2.0")
+    @parameter_added_in(skip_connection_check='3.8')
     @parameter_added_in(as_job='3.0')
     @parameter_added_in(connections='2.8')
     def publish(
         self, workbook_item, file, mode,
         connection_credentials=None, connections=None, as_job=False,
-        hidden_views=None
+        hidden_views=None, skip_connection_check=False
     ):
 
         if connection_credentials is not None:
@@ -317,6 +318,9 @@ class Workbooks(QuerysetEndpoint):
 
         if as_job:
             url += '&{0}=true'.format('asJob')
+
+        if skip_connection_check:
+            url += '&{0}=true'.format('skipConnectionCheck')
 
         # Determine if chunking is required (64MB is the limit for single upload method)
         if file_size >= FILESIZE_LIMIT:
